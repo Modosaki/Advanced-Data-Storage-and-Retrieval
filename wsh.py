@@ -34,8 +34,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/start<br/>"
-        f"/api/v1.0/start/end"
+        f"/api/v1.0/startdate/<br/>Example: '/api/v1.0/2012-02-28'<br/>"
+        f"/api/v1.0/startdate/enddate/<br/>Example: '/api/v1.0/2012-02-28/2012-03-28'"
     
     )
 
@@ -85,39 +85,23 @@ def tobs():
 
 
 @app.route("/api/v1.0/<start>")
-def startd(start):
+def calc_temps(start):
     session3 = Session(engine)
-    canonicalized = start.replace(" ", "").lower()
-   
-   
-    def calc_temps(canonicalized):
-        avgw=session3.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >=  canonicalized).all()
-        avgwl= list(np.ravel(avgw))
-        return jsonify(avgwl)
+    avgw=session3.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    filter(Measurement.date >=  start).all()
+    avgwl= list(np.ravel(avgw))
+    return jsonify(avgwl)
 
 
 
 
-# @app.route("/api/v1.0/<start>/<end>")
-# def end():
-# #     session4 = Session(engine)
-#     def calc_temps(start_date, end_date):
-#     """TMIN, TAVG, and TMAX for a list of dates.
-    
-#     Args:
-#         start_date (string): A date string in the format %Y-%m-%d
-#         end_date (string): A date string in the format %Y-%m-%d
-        
-#     Returns:
-#         TMIN, TAVE, and TMAX
-#     """
-    
-#     return session4.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-#         filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
-
-
-
+@app.route("/api/v1.0/<start>/<end>")
+def calc_temps2(start,end):
+    session4 = Session(engine)
+    avgw=session4.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+    filter(Measurement.date >=  start).filter(Measurement.date <= end).all()
+    avgwl= list(np.ravel(avgw))
+    return jsonify(avgwl)
 
 
 
